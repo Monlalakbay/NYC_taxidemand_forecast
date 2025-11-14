@@ -141,11 +141,12 @@ This command executes:
 
 ❌ Unified evaluation on the test set (src/evaluation/evaluate_test_models.py)
 
-🌍 Spatial visualization (Folium map)
+🌍 Next-hour demand forecast visualization (Folium map)
 
 📊 All artifacts (predictions, logs, summaries, plots) are stored under:
 ```shell
-data/runs/<timestamp>/
+data/runs/<model><timestamp>/
 data/evaluation/
+data/evaluation/maps
 pipeline_log.csv
 ```
