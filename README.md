@@ -141,6 +141,5 @@ This command executes:
 ```shell
 data/runs/<timestamp>/
 data/evaluation/
-logs/
 pipeline_log.csv
 ```
