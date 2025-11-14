@@ -116,7 +116,7 @@ Feel free to fork, adapt, or extend the pipeline for other cities, additional fe
 The entire modeling workflow can be launched with **one single command**:
 
 ```shell
-python -m run_pipeline
+python -m src.run_pipeline
 ```
 
 This command executes:
