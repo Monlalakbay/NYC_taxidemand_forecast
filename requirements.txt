@@ -1,0 +1,26 @@
+# Core
+numpy
+pandas
+joblib
+
+# Geospatial
+geopandas
+shapely
+fiona
+pyproj
+
+# Visualization
+matplotlib
+seaborn
+folium
+branca
+
+# Machine Learning
+scikit-learn
+lightgbm
+
+# Deep Learning
+tensorflow
+
+# Utilities
+tqdm
