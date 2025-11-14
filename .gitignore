@@ -1,0 +1,29 @@
+# Virtual environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+logs/
+
+# Data (large, local, or sensitive)
+data/raw/
+data/cleaned/
+data/processed/
+data/runs/
+data/evaluation/maps/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
