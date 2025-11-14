@@ -1,4 +1,4 @@
-# src/data/run_pipeline.py — Unified Pipeline Runner
+# src/run_pipeline.py — Unified Pipeline Runner 
 
 import os
 import sys
@@ -14,20 +14,15 @@ logger = init_logger(__name__)
 
 HERE = os.path.dirname(__file__)
 BASE_DIR = os.path.abspath(os.path.join(HERE, ".."))
-ENABLE_HYBRID = True  # toggle for hybrid blend
+ENABLE_HYBRID = True  # toggle hybrid blending
 
 
 def utc_now():
     return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
-def abs_path(rel_path: str) -> str:
-    """Create absolute path based on project root."""
-    return os.path.join(BASE_DIR, rel_path.replace("/", os.sep))
-
-
 # ------------------------------------------------------------
-# Live spinner progress bar
+# Spinner / progress bar
 # ------------------------------------------------------------
 def run_with_progress(cmd, description):
     pbar = tqdm(total=0, desc=f"⏳ {description}", bar_format="{desc}")
@@ -55,10 +50,9 @@ def run_with_progress(cmd, description):
 
 
 # ------------------------------------------------------------
-# Run each submodule & log results
+# Run module
 # ------------------------------------------------------------
-def run_module(script_rel_path: str, description: str):
-    script_abs = abs_path(script_rel_path)
+def run_module(module_name: str, description: str):
     logger.info("=" * 80)
     logger.info(f"▶️  {description}")
     logger.info("=" * 80)
@@ -66,64 +60,52 @@ def run_module(script_rel_path: str, description: str):
     start = time.time()
     status = "success"
 
-    try:
-        result = run_with_progress([sys.executable, script_abs], description)
-        duration = round((time.time() - start) / 60, 2)
+    cmd = [sys.executable, "-m", module_name]
+    result = run_with_progress(cmd, description)
 
-        # Show stdout/stderr
-        if result.stdout:
-            logger.info(result.stdout)
-        if result.stderr:
-            logger.warning("stderr:\n%s", result.stderr)
+    duration = round((time.time() - start) / 60, 2)
 
-        if result.returncode != 0:
-            status = f"error: returncode {result.returncode}"
-            logger.error(f"❌ Step failed with code {result.returncode}")
+    if result.stdout:
+        logger.info(result.stdout)
+    if result.stderr:
+        logger.warning("stderr:\n%s", result.stderr)
 
-        else:
-            logger.info(f"✅ Completed {description} in {duration} min.")
-
-    except Exception as e:
-        duration = round((time.time() - start) / 60, 2)
-        status = f"exception: {str(e)}"
-        logger.exception(f"❌ {description} failed — {e}")
-
-    # Unified log entry
-    log_pipeline_step(description, status, duration_min=duration)
-
-    if status.startswith("error") or status.startswith("exception"):
+    if result.returncode != 0:
+        status = f"error: returncode {result.returncode}"
+        logger.error(f"❌ Step failed with code {result.returncode}")
+        log_pipeline_step(description, status, duration_min=duration)
         sys.exit(1)
+
+    logger.info(f"✅ Completed {description} in {duration} min.")
+    log_pipeline_step(description, status, duration_min=duration)
 
 
 # ------------------------------------------------------------
-# Forecast CSV Export
+# Export forecast file
 # ------------------------------------------------------------
 def export_forecast_report(base_dir):
     logger.info("📈 Exporting latest forecast report...")
 
     eval_dir = os.path.join(base_dir, "data", "evaluation")
-    runs_dir = os.path.join(base_dir, "data", "runs")
 
-    eval_runs = sorted([d for d in os.listdir(eval_dir) if d.startswith("all_models_eval_")])
-    if not eval_runs:
-        logger.warning("⚠️ No evaluation summary found — skipping forecast export.")
+    summary_files = sorted(
+        f for f in os.listdir(eval_dir)
+        if f.endswith(".csv") and "all_models_eval" in f
+    )
+
+    if not summary_files:
+        logger.warning("⚠️ No evaluation summary found — skipping export.")
         return
 
-    latest_folder = eval_runs[-1]
-    summary_file = os.path.join(eval_dir, latest_folder)
-
-    if not os.path.exists(summary_file):
-        logger.warning("⚠️ Summary file missing — skipping forecast export.")
-        return
+    latest = summary_files[-1]
+    src_path = os.path.join(eval_dir, latest)
+    out_path = os.path.join(eval_dir, "forecast_latest.csv")
 
     import pandas as pd
-
-    df = pd.read_csv(summary_file)
-
-    out_path = os.path.join(eval_dir, "forecast_latest.csv")
+    df = pd.read_csv(src_path)
     df.to_csv(out_path, index=False)
 
-    logger.info(f"✅ Forecast exported to: {out_path}")
+    logger.info(f"✅ Forecast exported: {out_path}")
     log_pipeline_step("Export forecast report", "success", details=f"file={out_path}")
 
 
@@ -135,21 +117,21 @@ if __name__ == "__main__":
     logger.info(f"📂 Project root: {BASE_DIR}")
 
     steps = [
-        ("src/data/clean_data.py", "Cleaning raw taxi pickup files"),
-        ("src/data/preprocess.py", "Preprocessing taxi pickup data"),
-        ("src/data/split_data.py", "Splitting & scaling dataset"),
-        ("src/models/modeling_districts.py", "Training ensemble (RF + LGBM)"),
-        ("src/models/modeling_conv_lstm_train.py", "Training ConvLSTM models"),
+        ("src.data.clean_data", "Cleaning raw taxi pickup files"),
+        ("src.data.preprocess", "Preprocessing taxi pickup data"),
+        ("src.data.split_data", "Splitting & scaling dataset"),
+        ("src.models.modeling_districts", "Training ensemble (RF + LGBM)"),
+        ("src.models.modeling_conv_lstm_train", "Training ConvLSTM models"),
     ]
 
-    for script, desc in steps:
-        run_module(script, desc)
+    for module, desc in steps:
+        run_module(module, desc)
 
     if ENABLE_HYBRID:
-        run_module("src/models/blend_hybrid.py", "Hybrid blending (RF+LGBM+ConvLSTM)")
+        run_module("src.models.blend_hybrid", "Hybrid blending (RF + LGBM + ConvLSTM)")
 
-    run_module("src/evaluation/evaluate_test_models.py", "Unified evaluation on test dataset")
-    run_module("src/visualize/next_hour_map.py", "Generate next-hour demand map")
+    run_module("src.evaluation.evaluate_test_models", "Unified evaluation on test dataset")
+    run_module("src.visualize.next_hour_map", "Generate next-hour demand map")
 
     export_forecast_report(BASE_DIR)
 
