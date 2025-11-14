@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timezone
 from tensorflow.keras import layers, models, optimizers, callbacks, Input
-from sklearn.metrics import mean_squared_error, mean_absolute_error  # <-- ADDED mae import
+from sklearn.metrics import mean_squared_error, mean_absolute_error  
 
 from src.utils.pipeline_logger import init_logger, log_pipeline_step
 from src.data.data_prep import prepare_conv_lstm_data, SEQ_LEN
