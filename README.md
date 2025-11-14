@@ -68,7 +68,13 @@ NYC_taxidemand_forecast/
 
 ---
 ## 2. 💻 Setup
-### 2.1. Setup Create and activate a virtual environment (recommended)
+### 2.1. Clone repository
+Open a terminal (or VS Code terminal) and run:
+```shell
+git clone https://github.com/Monlalakbay/NYC_taxidemand_forecast.git
+```
+
+### 2.2. Create and activate a virtual environment (recommended)
 ```shell
 cd NYC_taxidemand_forecast
 
@@ -81,7 +87,7 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-### 2.2. Install dependencies
+### 2.3. Install dependencies
 ```shell
 pip install --upgrade pip
 pip install -r requirements.txt
