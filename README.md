@@ -51,7 +51,7 @@ NYC_taxidemand_forecast/
 │  ├─ utils/
 │  │  └─ pipeline_logger.py         # Centralized logging + pipeline step helper
 │  │
-│  └─ run_pipeline.py               # Model pipeline
+│  └─ run_pipeline.py               # Unified pipeline runner
 │
 ├─ notebooks/
 │  └─ figures                     # Result plots
@@ -59,7 +59,7 @@ NYC_taxidemand_forecast/
 │  └─ 01_exploration.ipynb        # Exploratory analysis 
 │  └─ 02_modeling_baseline.ipynb  # Analysis of baseline model
 │
-├─ reports/                       # (Optional) Technical reports for Stakeholders
+├─ reports/                       # (Optional) Technical reports for stakeholders
 │
 ├─ README.md
 ├─ requirements.txt
@@ -109,6 +109,11 @@ data/raw/pickup_data
 ```
 
 For the pickup data, the project uses publicly available data from:
+
+**NYC Community District Boundaries**  
+Department of City Planning. (n.d.). *NYC Community Districts.* NYC Planning.  
+Dataset available at:    
+https://www.nyc.gov/content/planning/pages/resources/datasets/community-districts
 
 **Taxi Pickup Records**  
 Kaggle. (2019). *Uber Dataset from April to September 2014.*  
